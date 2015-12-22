@@ -1,5 +1,5 @@
 /**
- * SemanticUI-Angular - 1.0.0
+ * SemanticUI-Angular - 1.0.1
  * Angular Directives for Semantic UI
  * 
  * https://github.com/ClickerMonkey/SemanticUI-Angular
@@ -1402,8 +1402,8 @@
     }]);
   });
 
-  app.directive('smDropdown', ['SemanticUI',
-  function SemanticDropdown(SemanticUI) 
+  app.directive('smDropdown', ['SemanticUI', '$timeout',
+  function SemanticDropdown(SemanticUI, $timeout) 
   {
     return {
 
@@ -1512,29 +1512,31 @@
       {
         var applyValue = function( value )
         {
-          if ( element.dropdown('is multiple') )
-          {
-            if ( value instanceof Array )
+          $timeout(function() {
+            if ( element.dropdown('is multiple') )
             {
-              var translatedValue = [];
-
-              for (var i = 0; i < value.length; i++)
+              if ( value instanceof Array )
               {
-                var translated = scope.translateValue( value[ i ] );
+                var translatedValue = [];
 
-                if ( angular.isDefined( translated ) )
+                for (var i = 0; i < value.length; i++)
                 {
-                  translatedValue.push( translated );
-                }
-              }
+                  var translated = scope.translateValue( value[ i ] );
 
-              element.dropdown( 'set exactly', translatedValue );
+                  if ( angular.isDefined( translated ) )
+                  {
+                    translatedValue.push( translated );
+                  }
+                }
+
+                element.dropdown( 'set exactly', translatedValue );
+              }
             }
-          }
-          else
-          {
-            element.dropdown( 'set selected', scope.translateValue( value ) );
-          }
+            else
+            {
+              element.dropdown( 'set selected', scope.translateValue( value ) );
+            }
+          },0);
         };
 
         SemanticUI.setDefaultFunction( scope, 'label', attributes, function(locals){return locals.item} );
